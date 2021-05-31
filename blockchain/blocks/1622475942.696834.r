@@ -1,0 +1,1 @@
+{"count": 3, "transactions": [], "last_hash": "0000db0d21baa350c08bd793356944aa878d4e7c7c3bec3db2729e2a4b8ab766", "timestamp": 1622475942.696834, "nonce": 4493, "forging": "14bCyrPDTbY2T5YF1mSH729PhKqzdtbg9Z", "hash": "00006b731421e04926f72dd33b2ae7f5e60b613f44d84c1e8d159dd60e18de08"}

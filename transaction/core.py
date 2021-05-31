@@ -1,3 +1,4 @@
+import os
 import ecdsa
 import json
 import codecs
@@ -16,14 +17,18 @@ class Transaction:
         self.sender_private_key = sender_private_key
         self.timestamp = datetime.utcnow().timestamp()
         self.signature = ''
+        self.wallets = []
         self.sender_private_key = sender_private_key
         self.sender_public_key = sender_public_key
+        self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.transaction = {
             'sender': self.sender,
             'receiver': self.receiver,
             'amount': self.amount,
             'timestamp': self.timestamp
         }
+        with open(self.path + '/blockchain/blocks/wallets.r') as e:
+            self.wallets = json.loads(e.read())
         self.create_signature()
 
     def update_signature(self, signature):
@@ -46,12 +51,17 @@ class Transaction:
         if len(Blockchain().view()) == 0:
             return False
 
-        if Pool().add_transaction(
-            transaction=self.transaction
-        ):
-            return True
+        if self.sender in self.wallets:
 
-        return False
+            if self.amount <= self.wallets[self.sender]['amount']:
+                if Pool().add_transaction(
+                    transaction=self.transaction
+                ):
+                    return self.transaction
+            else:
+                return False
+        else:
+            return False
 
     def view(self):
         return self.transaction

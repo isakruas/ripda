@@ -1,14 +1,13 @@
 import json
-
 from block.core import Block
-from blockchain.core import Blockchain
 from blockchain.utils import Utils
-
+from random import randrange
 
 class Miner:
-    def __init__(self, block=None):
+    def __init__(self, block=None, wallet=None):
         self.hash = ''
-        self.nonce = 0
+        self.nonce = randrange(1000)
+        self.wallet = wallet
         if block is not None:
             self.block = block
         else:
@@ -18,6 +17,11 @@ class Miner:
         return self.block['forger']
 
     def ripda(self):
+        if len(self.block) == 0:
+            return False
+
+        if self.wallet is None:
+            return False
 
         if self.forging():
 
@@ -31,7 +35,8 @@ class Miner:
                     'transactions': self.block['transactions'],
                     'last_hash': self.block['last_hash'],
                     'timestamp': self.block['timestamp'],
-                    'nonce': self.nonce
+                    'nonce': self.nonce,
+                    'forging': self.wallet
                 }
 
                 self.hash = Utils.sha256(json.dumps(block))
@@ -40,4 +45,4 @@ class Miner:
 
             block['hash'] = self.hash
 
-            return Blockchain().add_block(block)
+            return block

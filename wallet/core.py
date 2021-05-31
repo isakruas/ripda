@@ -34,7 +34,6 @@ class Wallet:
                 sender_private_key=self.get_private_key(),
                 sender_public_key=self.public_key
             ).create()
-
             return transaction
         return False
 

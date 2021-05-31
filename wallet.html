@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ripda</title>
+    </head>
+    <body>
+            <p>Wallet</p>
+            <button id="wallet_create_wallet">wallet_create_wallet</button>
+            <br />
+            <button id="wallet_create_transaction">wallet_create_transaction</button>
+            <br />
+            <p>Block</p>
+            <button id="block_view">block_view</button>
+            <br />
+            <button id="block_is_hash_valid">block_is_hash_valid</button>
+            <br />
+            <p>Blockchain</p>
+            <button id="blockchain_view">blockchain_view</button>
+            <br />
+            <button id="blockchain_add_block">blockchain_add_block</button>
+            <br />
+
+    <script>
+
+        var wallet_create_wallet = document.getElementById('wallet_create_wallet'),
+            wallet_create_transaction = document.getElementById('wallet_create_transaction'),
+            block_view = document.getElementById('block_view'),
+            block_is_hash_valid = document.getElementById('block_is_hash_valid'),
+            blockchain_view = document.getElementById('blockchain_view'),
+            blockchain_add_block = document.getElementById('blockchain_add_block');
+
+            node = new WebSocket('ws://127.0.0.1:1140/');
+            node.onmessage = function (event) {
+                data = JSON.parse(event.data);
+                console.log(data)
+            };
+
+            block_view.onclick = function (event) {
+
+                send = {
+                    m: 'block',
+                    f: 'view',
+                    d:  {}
+                }
+
+                node.send(JSON.stringify(send));
+
+            }
+
+            block_is_hash_valid.onclick = function (event) {
+
+                send_1 = {
+                    m: 'block',
+                    f: 'is_hash_valid',
+                    d:  {
+                        hash: '0000455e446d61974b748f753b684c843df66c98a3f15310600bbca0b6f10b00'
+                    }
+                }
+
+                node.send(JSON.stringify(send_1));
+
+                send_2 = {
+                    m: 'block',
+                    f: 'is_hash_valid',
+                    d:  {
+                        hash: '0007455e446d61974b748f753b684c843df66c98a3f15310600bbca0b6f10b00'
+                    }
+                }
+
+                node.send(JSON.stringify(send_2));
+            }
+
+
+            blockchain_view.onclick = function (event) {
+
+                send = {
+                    m: 'blockchain',
+                    f: 'view',
+                    d:  {}
+                }
+
+                node.send(JSON.stringify(send));
+
+            }
+
+            blockchain_add_block.onclick = function (event) {
+
+                send = {
+                    m: 'blockchain',
+                    f: 'add_block',
+                    d:  {
+                        'count': 10,
+                        'transactions': [],
+                        'last_hash': '00002061667eebd696f52cf71aa592cc4829ce88d4386617305e7ea1ea02ef12',
+                        'timestamp': 1622390349.51444,
+                        'forger': false
+                    }
+                }
+
+                node.send(JSON.stringify(send));
+
+            }
+
+            node_wallet = new WebSocket('ws://127.0.0.1:1050/');
+            node_wallet.onmessage = function (event) {
+                data = JSON.parse(event.data);
+                console.log(data)
+            };
+
+            wallet_create_wallet.onclick = function (event) {
+
+                send_1 = {
+                    m: 'wallet',
+                    f: 'create_wallet',
+                    d:  {'email': 'email', 'password': 'password'}
+                }
+
+
+                node_wallet.send(JSON.stringify(send_1));
+
+                send_2 = {
+                    m: 'wallet',
+                    f: 'create_wallet',
+                    d:  {}
+                }
+
+
+                node_wallet.send(JSON.stringify(send_2));
+
+            }
+
+            wallet_create_transaction.onclick = function (event) {
+                /*
+                    É necessário incluir a chave privada
+                */
+                t_1 = {
+                    receiver: '18yvjn9rEBG4npnG8sZTVhUJRpkDzcws7h',
+                    amount:0.0004,
+                    private_key: ""
+                }
+
+                t_2 = {
+                    receiver: '13H2LNehz6skD7VA6cmwhfwDxuRNSRYcbo',
+                    amount:0.0004,
+                    private_key: ""
+                }
+
+                t_3 = {
+                    receiver: '14bCyrPDTbY2T5YF1mSH729PhKqzdtbg9Z',
+                    amount:0.0004,
+                    private_key: ""
+                }
+
+
+                t_4 = {
+                    receiver: '1QDHV2TfNDCoaMeVerRz6v6eHfDLNtiFNU',
+                    amount:0.0004,
+                    private_key: ""
+                }
+
+                s_1 = {
+                    m: 'wallet',
+                    f: 'create_transaction',
+                    d:  t_1
+                }
+                s_2 = {
+                    m: 'wallet',
+                    f: 'create_transaction',
+                    d:  t_2
+                }
+                s_3 = {
+                    m: 'wallet',
+                    f: 'create_transaction',
+                    d:  t_3
+                }
+                s_4 = {
+                    m: 'wallet',
+                    f: 'create_transaction',
+                    d:  t_4
+                }
+                for (var i = 1; i < 7; i++) {
+                    node_wallet.send(JSON.stringify(s_1));
+                    node_wallet.send(JSON.stringify(s_2));
+                    node_wallet.send(JSON.stringify(s_3));
+                    node_wallet.send(JSON.stringify(s_4));
+                }
+            }
+
+
+ 
+            node_miner = new WebSocket('ws://127.0.0.1:1120/');
+            node_miner.onmessage = function (event) {
+                data = JSON.parse(event.data);
+                console.log(data)
+            };
+ 
+    </script>
+    </body>
+</html>

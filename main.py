@@ -1,43 +1,50 @@
-from node.core import Node
-import asyncio
-import websockets
-from wallet.core import Wallet
-from miner.core import Miner
+try:
+    import thread
+except ImportError:
+    import _thread as thread
+import time
+import os
 
-_wallet = Wallet().create_wallet()
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-async def miner():
+def node():
+    os.system('python ' + PATH + '/node.py')
+    pass
+
+def wallet():
+    # os.system('python ' + PATH + '/wallet.py')
+    pass
+
+def miner_1QDHV2TfNDCoaMeVerRz6v6eHfDLNtiFNU():
+    os.system('python ' + PATH + '/miner_1QDHV2TfNDCoaMeVerRz6v6eHfDLNtiFNU.py')
+    pass
+
+def miner_18yvjn9rEBG4npnG8sZTVhUJRpkDzcws7h():
+    os.system('python ' + PATH + '/miner_18yvjn9rEBG4npnG8sZTVhUJRpkDzcws7h.py')
+    pass
+
+def miner_13H2LNehz6skD7VA6cmwhfwDxuRNSRYcbo():
+    os.system('python ' + PATH + '/miner_13H2LNehz6skD7VA6cmwhfwDxuRNSRYcbo.py')
+    pass
+
+def miner_14bCyrPDTbY2T5YF1mSH729PhKqzdtbg9Z():
+    os.system('python ' + PATH + '/miner_14bCyrPDTbY2T5YF1mSH729PhKqzdtbg9Z.py')
+    pass
+
+def init():
+    thread.start_new_thread(node, ())
+    time.sleep(20)
+    # thread.start_new_thread(wallet, ())
+    time.sleep(10)
+    thread.start_new_thread(miner_1QDHV2TfNDCoaMeVerRz6v6eHfDLNtiFNU, ())
+    thread.start_new_thread(miner_13H2LNehz6skD7VA6cmwhfwDxuRNSRYcbo, ())
+    thread.start_new_thread(miner_14bCyrPDTbY2T5YF1mSH729PhKqzdtbg9Z, ())
+    thread.start_new_thread(miner_18yvjn9rEBG4npnG8sZTVhUJRpkDzcws7h, ())
     while True:
-        Miner().ripda()
-        await asyncio.sleep(30)
+        time.sleep(3.154e+9)
+        pass
 
 
-async def log():
-    global _wallet
-    wallet = Wallet(
-        private_key=_wallet['private_key']
-    )
-
-    while True:
-        await asyncio.sleep(0.5)
-
-        wallet.create_transaction(
-            receiver='18QT6s1zek1ZFaBMMENCfonwTkVfSxjuzZ',
-            amount=10
-        )
-        print('len(nodes) = ' + str(Node().view()))
-
-
-async def node():
-    server = Node()
-    await websockets.serve(server.ws_handler, 'localhost', 6789)
-
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(asyncio.gather(
-    node(),
-    log(),
-    miner()
-))
-loop.run_forever()
+if __name__ == '__main__':
+    init()

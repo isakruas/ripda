@@ -11,7 +11,7 @@ class Pool:
     def __init__(self):
         self.transactions = transactions
         self.pending_transactions = pending_transactions
-        self.block_limit = 100
+        self.block_limit = 25
         self.remove_from_pool_pending_transactions = []
 
     def view(self, pending=False):
@@ -26,12 +26,9 @@ class Pool:
             return True
         return False
 
-    def add_transaction(self, transaction):
-        if self.forging_required():
-            self.pending_transactions.append(transaction)
-        else:
+    def update(self):
+        if not self.forging_required():
             if len(self.pending_transactions) >> 0:
-
                 for i in range(0, len(self.pending_transactions)):
                     if i < self.block_limit:
                         try:
@@ -41,18 +38,18 @@ class Pool:
                             pass
                     else:
                         break
-                self.transactions.append(transaction)
-            else:
-                self.transactions.append(transaction)
-        if self.transaction_exists(transaction):
-            # notify(transaction)
-            self.remove_from_pool(
-                _transactions=self.remove_from_pool_pending_transactions,
-                pool='pending_transactions'
-            )
-            self.remove_from_pool_pending_transactions.clear()
+                self.remove_from_pool(
+                    _transactions=self.remove_from_pool_pending_transactions,
+                    pool='pending_transactions'
+                )
+                self.remove_from_pool_pending_transactions.clear()
+    def add_transaction(self, transaction):
+        if self.forging_required():
+            self.pending_transactions.append(transaction)
+            return True
+        else:
+            self.transactions.append(transaction)
             return self.transaction_exists(transaction)
-        return self.transaction_exists(transaction)
 
     def transaction_exists(self, transaction):
         for pool_transaction in self.transactions:
