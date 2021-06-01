@@ -1,0 +1,9 @@
+[build-system]
+requires = [
+    'base58==2.1.0',
+    'ecdsa==0.17.0',
+    'websockets==9.1',
+    'setuptools>=40.8.0',
+    'wheel'
+]
+build-backend = 'setuptools.build_meta'
