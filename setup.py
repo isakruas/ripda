@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='ripda',
-    version='1.0.0.dev1',
+    version='1.0.0.dev2',
     description='Integração do núcleo Ripda',
     long_description=long_description,
     long_description_content_type='text/markdown',

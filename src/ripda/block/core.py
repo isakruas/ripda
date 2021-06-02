@@ -3,12 +3,13 @@ from datetime import datetime
 from ..transaction.pool import Pool
 from ..transaction.utils import Utils
 from ..blockchain.core import Blockchain
+from ..config import getc
 
 
 class Block:
 
     def __init__(self):
-        self.difficulty = '0' * 4
+        self.difficulty = '0' * int(getc('ripda_block', 'core_difficulty'))
         self.count = len(Blockchain().view())
         self.transactions = Pool().view()
         self.timestamp = datetime.utcnow().timestamp()

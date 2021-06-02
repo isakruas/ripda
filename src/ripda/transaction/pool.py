@@ -1,4 +1,5 @@
 from typing import List, Any
+from ..config import getc
 
 transactions: List[Any] = []
 pending_transactions: List[Any] = []
@@ -11,7 +12,7 @@ class Pool:
     def __init__(self):
         self.transactions = transactions
         self.pending_transactions = pending_transactions
-        self.block_limit = 25
+        self.block_limit = int(getc('ripda_transaction', 'pool_block_limit'))
         self.remove_from_pool_pending_transactions = []
 
     def view(self, pending=False):

@@ -51,7 +51,7 @@ class Node:
             _dir = {
                 'h': {
                     'n': 'Ripda Core',
-                    'v': '1.0.0.dev1',
+                    'v': '1.0.0.dev2',
                 }
             }
             await node.send(json.dumps(_dir))

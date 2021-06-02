@@ -5,7 +5,7 @@ import os
 import ecdsa
 from ..transaction.utils import Utils
 from ..blockchain.utils import Utils
-
+from ..config import getc
 try:
     from ..transaction.pool import Pool
 except ImportError:
@@ -37,13 +37,16 @@ class Blockchain:
     def __init__(self):
         self.blockchain = blockchain
         self.wallet = wallet
-        self.difficulty = '0' * 4
+        self.difficulty = '0' * int(getc('ripda_block', 'core_difficulty'))
         self.block = []
-        self.path = os.path.dirname(os.path.realpath(__file__)) + '/blocks/'
+        self.path = str(getc('ripda', 'path_blocks'))
         if len(self.blockchain) == 0:
             blocks = os.listdir(self.path)
-            blocks.remove('wallets.r')
-            os.remove(self.path + 'wallets.r')
+            if 'wallets.r' in blocks:
+                blocks.remove('wallets.r')
+                os.remove(self.path + 'wallets.r')
+                pass
+
             if len(blocks) >> 0:
                 for block in sorted(blocks):
                     with open(self.path + block) as e:

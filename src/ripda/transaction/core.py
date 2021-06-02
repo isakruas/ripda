@@ -6,6 +6,7 @@ from datetime import datetime
 from .pool import Pool
 from .utils import Utils
 from ..blockchain.core import Blockchain
+from ..config import getc
 
 
 class Transaction:
@@ -20,14 +21,14 @@ class Transaction:
         self.wallets = []
         self.sender_private_key = sender_private_key
         self.sender_public_key = sender_public_key
-        self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.path = str(getc('ripda', 'path_blocks'))
         self.transaction = {
             'sender': self.sender,
             'receiver': self.receiver,
             'amount': self.amount,
             'timestamp': self.timestamp
         }
-        with open(self.path + '/blockchain/blocks/wallets.r') as e:
+        with open(self.path + 'wallets.r') as e:
             self.wallets = json.loads(e.read())
         self.create_signature()
 
@@ -55,7 +56,7 @@ class Transaction:
 
             if self.amount <= self.wallets[self.sender]['amount']:
                 if Pool().add_transaction(
-                    transaction=self.transaction
+                        transaction=self.transaction
                 ):
                     return self.transaction
             else:

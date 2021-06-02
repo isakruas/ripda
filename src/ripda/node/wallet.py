@@ -3,6 +3,9 @@ import json
 import websockets
 from websockets import WebSocketServerProtocol
 from ..wallet.core import Wallet
+from ..config import getc
+
+
 node_wallets = set()
 
 
@@ -46,7 +49,7 @@ class NodeWallet:
             _dir = {
                 'h': {
                     'n': 'Ripda Wallet',
-                    'v': '1.0-beta.1',
+                    'v': '1.0.0.dev2',
                 }
             }
             await node.send(json.dumps(_dir))
@@ -144,7 +147,9 @@ class NodeWallet:
                             'f': 'create',
                             'd': create_transaction,
                         }
-                        uri = 'ws://localhost:1140'
+
+                        uri = 'ws://' + str(getc('ripda_node', 'core_host')) + ':' + str(
+                            getc('ripda_node', 'core_port'))
                         async with websockets.connect(uri) as n:
                             await n.send(json.dumps(sender))
                         r = await self.sender(m='wallet', f='create_transaction', r=create_transaction)
@@ -152,5 +157,6 @@ class NodeWallet:
                         return True
                 except:
                     return False
-            return await self.sender(m='wallet', f='create_transaction', e='Dados incompletos para realizar a transação')
+            return await self.sender(m='wallet', f='create_transaction',
+                                     e='Dados incompletos para realizar a transação')
         return await self.sender(m='wallet', f=receiver['f'], e='Não foi possível identificar o comando')

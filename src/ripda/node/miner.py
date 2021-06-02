@@ -40,7 +40,7 @@ class NodeMiner:
             _dir = {
                 'h': {
                     'n': 'Ripda Miner',
-                    'v': '1.0-beta.1',
+                    'v': '1.0.0.dev2',
                 }
             }
             await ws.send(json.dumps(_dir))
