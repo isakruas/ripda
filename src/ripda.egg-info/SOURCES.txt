@@ -5,7 +5,8 @@ pyproject.toml
 setup.cfg
 setup.py
 src/ripda/__init__.py
-src/ripda/config.py
+src/ripda/services.py
+src/ripda/settings.py
 src/ripda.egg-info/PKG-INFO
 src/ripda.egg-info/SOURCES.txt
 src/ripda.egg-info/dependency_links.txt
@@ -21,6 +22,7 @@ src/ripda/miner/core.py
 src/ripda/node/__init__.py
 src/ripda/node/core.py
 src/ripda/node/miner.py
+src/ripda/node/utils.py
 src/ripda/node/wallet.py
 src/ripda/transaction/__init__.py
 src/ripda/transaction/core.py

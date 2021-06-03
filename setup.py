@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='ripda',
-    version='1.0.0.dev2',
+    version='1.0.0.dev3',
     description='Integração do núcleo Ripda',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -26,7 +26,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.6',
-    install_requires=['base58==2.1.0', 'ecdsa==0.17.0', 'websockets==9.1'],
+    install_requires=['base58==2.1.0', 'ecdsa==0.17.0', 'websockets==9.1', 'python-dateutil==2.8.1'],
     project_urls={
         'Bug Reports': 'https://github.com/isakruas/ripda/issues',
         'Source': 'https://github.com/isakruas/ripda/',

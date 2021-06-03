@@ -1,16 +1,17 @@
-import os
 import ecdsa
 import json
 import codecs
 from datetime import datetime
-from .pool import Pool
-from .utils import Utils
-from ..blockchain.core import Blockchain
-from ..config import getc
+from ripda.transaction.pool import Pool
+from ripda.transaction.utils import Utils
+from ripda.blockchain.core import Blockchain
+from ripda.settings import getc
 
 
 class Transaction:
-
+    """
+        Transaction é responsável por preparar adequadamente uma transação para ser adicionada à rede.
+    """
     def __init__(self, sender, receiver, amount, sender_private_key, sender_public_key):
         self.sender = sender
         self.receiver = receiver
@@ -39,13 +40,9 @@ class Transaction:
 
     def create_signature(self):
         transaction_sha256_ripemd160 = Utils.ripemd160(Utils.sha256(json.dumps(self.transaction)))
-
         transaction = codecs.decode(transaction_sha256_ripemd160.encode('utf-8'), 'hex')
-
         private_key = ecdsa.SigningKey.from_string(self.sender_private_key, curve=ecdsa.NIST521p)
-
         signature = private_key.sign(transaction)
-
         return self.update_signature(signature.hex())
 
     def create(self):
@@ -55,6 +52,7 @@ class Transaction:
         if self.sender in self.wallets:
 
             if self.amount <= self.wallets[self.sender]['amount']:
+
                 if Pool().add_transaction(
                         transaction=self.transaction
                 ):

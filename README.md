@@ -84,35 +84,287 @@ True
 >>> wallet.create_transaction(receiver='', amount='')
 ``` 
 ###### Módulo node
-> Este módulo possui uma série de funcionalidades que facilitam a integração das aplicações ao núcleo da Ripda. São APIs que permitem a criação de uma rede P2P através de websockets, bem como o envio de ordens através de qualquer dispositivo compatível com websockets para a rede. Você pode usar os recursos das APIs, usando websockets, como no exemplo abaixo. As portas definidas neste exemplo são portas padrão na rede Ripda.
+> Este módulo possui uma série de funcionalidades que facilitam a integração das aplicações ao núcleo da Ripda. São APIs que permitem a criação de uma rede P2P através de websockets, bem como o envio de ordens através de qualquer dispositivo compatível com websockets para a rede.
 
+##### Exemplos
+> O primeiro exemplo você pode ver como usar Ripda para criar uma rede. Por padrão, as redes funcionam localmente.
+
+###### services.py
 ```python
 import asyncio
-import websockets
-from ripda.node.core import Node
-from ripda.node.wallet import NodeWallet
-from ripda.node.miner import NodeMiner
+from ripda import services
 
-
-async def node():
-    server = Node()
-    await websockets.serve(server.ws_handler, 'localhost', 1140)
-
-async def node_wallet():
-    server = NodeWallet()
-    await websockets.serve(server.ws_handler, 'localhost', 1050)
-
-async def node_miner():
-    server = NodeMiner()
-    await websockets.serve(server.ws_handler, 'localhost', 1120)
-
+"""
+    Crie websockets para que seja possível se conectar à rede.
+"""
 loop = asyncio.get_event_loop()
 loop.run_until_complete(asyncio.gather(
-    node(),
-    node_wallet(),
-    node_miner()
+    # Node é o serviço principal, trata das transações e blocos da rede que se encontram em processo
+    # de validação, bem como os validados. Este endpoint pode ser público.
+    services.node(),
+    # Wallet é um conjunto de ferramentas que permite a criação de transações, criação de carteiras,
+    # validação de assinaturas,entre outras possibilidades. Não recomendamos tornar este endpoin público.
+    services.wallet(),
+    # Miner contém um conjunto de recursos para mineiros. Não recomendamos tornar este endpoin público.
+    services.miner()
 ))
 loop.run_forever()
 ``` 
 
+> O segundo exemplo é como se conectar a uma rede para extrair os blocos que estão sendo gerados, e tentar forjar esses blocos com a possibilidade de ganhar alguma recompensa em ripdas pelo trabalho realizado.
+
+###### miner.py
+```python
+"""
+    Vamos supor que services.py esteja em execução ou que o nó esteja disponível.
+"""
+import json
+import websockets
+from ripda.miner.core import Miner
+import asyncio
+from ripda.settings import getc
+
+
+async def get_last_block():
+    """
+        Solicitando ao Pool o bloco na fila para validação.
+    """
+    print('Solicitando ao Pool o bloco na fila para validação.')
+    uri = 'ws://' + str(getc('ripda_node', 'core_host')) + ':' + str(
+        getc('ripda_node', 'core_port'))
+    async with websockets.connect(uri) as node:
+        await node.send(json.dumps({
+            'm': 'block',
+            'f': 'view',
+            'd': {
+            }
+        }))
+        """
+            Tornou-se necessário aguardar 0,5s entre o envio da solicitação e a espera pela resposta.
+        """
+        await asyncio.sleep(0.5)
+        async for message in node:
+            receiver = json.loads(message)
+            if 'm' and 'f' and 'r' in receiver:
+                if receiver['m'] == 'block' and receiver['f'] == 'view':
+                    """
+                        Após obter a resposta, encerre a conexão com o Pool e retorne os dados.
+                    """
+                    await node.close()
+                    return receiver['r']
+
+
+async def add_block_on_blockchain(forger):
+    """
+        Tenta adicionar o bloco forjado ao Pool
+    """
+    print('Tenta adicionar o bloco forjado ao Pool.')
+    uri = 'ws://' + str(getc('ripda_node', 'core_host')) + ':' + str(
+        getc('ripda_node', 'core_port'))
+    async with websockets.connect(uri) as node:
+        await node.send(json.dumps({
+            'm': 'blockchain',
+            'f': 'add_block',
+            'd': forger
+        }))
+        """
+            Tornou-se necessário aguardar 0,5s entre o envio da solicitação e a espera pela resposta.
+        """
+        await asyncio.sleep(0.5)
+        async for message in node:
+            receiver = json.loads(message)
+            if 'm' and 'f' and 'd' in receiver:
+                if receiver['m'] == 'blockchain' and receiver['f'] == 'add_block':
+                    """
+                        Após obter a resposta, encerre a conexão com o Pool e retorne os dados.
+                    """
+                    if receiver['d'] == forger:
+                        await node.close()
+                        return receiver
+                    else:
+                        return False
+
+
+async def miner():
+    """
+        Verifica periodicamente o Pool em busca de blocos para validar,
+        se encontrar, tenta validar o bloco e adicioná-lo à cadeia de blocos.
+    """
+    while True:
+        block = await get_last_block()
+        if block['forger']:
+            """
+                O bloco recebido já pode ser forjado; tentando forjar o bloco.
+            """
+            print('O bloco recebido já pode ser forjado; tentando forjar o bloco.')
+            """
+                É necessário inserir o endereço de sua carteira corretamente, para que o prêmio seja pago.
+            """
+            forger = Miner(
+                block=block,
+                wallet='1QDHV2TfNDCoaMeVerRz6v6eHfDLNtiFNU'
+            ).ripda()
+            receiver = await add_block_on_blockchain(forger)
+            if 'd' in receiver:
+                """
+                    O bloco que você minerou foi adicionado ao Pool com sucesso.
+                """
+                print('O bloco que você minerou foi adicionado ao Pool com sucesso.')
+            elif receiver is False:
+                """
+                    Um novo bloco foi adicionado, mas não aquele que você minerou.
+                """
+                print('Um novo bloco foi adicionado, mas não aquele que você minerou.')
+        await asyncio.sleep(0.5)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(asyncio.gather(
+    miner()
+))
+loop.run_forever()
+
+``` 
+###### wallet.py
+> O terceiro exemplo é como conectar a API Wallet da Ripda para gerar e criar uma transação. Também mostra como criar uma carteira com ou sem entropia.
+
+```python
+"""
+    Vamos supor que services.py esteja em execução ou que o nó esteja disponível.
+    É possível construir vários outros exemplos de aplicativos que se comunicam com
+    a API e realizam a solicitação de transação. Para realizar a assinatura,
+    recomendamos que você envie a solicitação de protocolo a um Pool confiável.
+"""
+import json
+from ripda.wallet.core import Wallet
+import asyncio
+import websockets
+from ripda.settings import getc
+
+"""
+    Criando uma carteira sem entropia
+"""
+wallet_1 = Wallet().create_wallet()
+print(wallet_1)
+
+"""
+    Criando uma carteira com entropia
+    Carteiras criadas com entropia sempre retornam as mesmas chaves.
+"""
+wallet_2 = Wallet().create_wallet(email='email', password='password')
+print(wallet_2)
+
+"""
+
+"""
+frame = {
+    'm': 'wallet',  # módulo de destino
+    'f': 'create_transaction',  # função a ser executada
+    'd': {
+        'receiver': '18QT6s1zek1ZFaBMMENCfonwTkVfSxjuzZ',  # endereço da carteira do destinatário
+        'amount': 10,  # quantidade de ripdas a serem enviadas
+        'private_key': wallet_1['private_key'].hex(),  # chave privada do endereço da carteira; ele será usado para
+        # assinar a transação.
+    }
+}
+
+
+async def wallet():
+    """
+        Para que uma transação seja efetivada, é necessário que haja saldo na carteira.
+    """
+    global frame
+    while True:
+        uri = 'ws://' + str(getc('ripda_node', 'wallet_host')) + ':' + str(
+            getc('ripda_node', 'wallet_port'))
+        async with websockets.connect(uri) as node:
+            await node.send(json.dumps(frame))
+            """
+                Tornou-se necessário aguardar 0,5s entre o envio da solicitação e a espera pela resposta.
+            """
+            await asyncio.sleep(0.5)
+            async for message in node:
+                receiver = json.loads(message)
+                if 'm' and 'f' in receiver:
+                    if receiver['m'] == 'wallet' and receiver['f'] == 'create_transaction':
+                        if 'e' in receiver:
+                            print(receiver['e'])
+                            await node.close()
+                        else:
+                            if receiver['r'] == frame:
+                                """
+                                    O pedido de transação foi realizado com sucesso.
+                                    É necessário aguardar a confirmação da rede.
+                                """
+                                print('O pedido de transação foi realizado com sucesso.\nÉ necessário aguardar a '
+                                      'confirmação da rede.\n')
+                                await node.close()
+                            else:
+                                """
+                                    Uma transação foi criada, mas não por este algoritmo.
+                                """
+                                print('Uma transação foi criada, mas não por este algoritmo.')
+                                await node.close()
+
+        await asyncio.sleep(10)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(asyncio.gather(
+    wallet()
+))
+loop.run_forever()
+
+``` 
+
+###### settings.py
+
+>  O quarto exemplo é como as configurações padrão do Ripada são alteradas para personalizar algumas de suas funcionalidades.
+
+```python
+from ripda.settings import getc, setc
+"""
+    getc() busca o valor de uma variável de um arquivo de configuração
+    setc() modifica o valor de uma variável de um arquivo de configuração
+
+    Variáveis de configuração padrão
+    
+    config['ripda'] = {
+        'path': str(Path.home()) + '/ripda/',
+        'path_blocks': str(Path.home()) + '/ripda/blocks/',
+    }
+
+    config['ripda_node'] = {
+        'core_host': 'localhost',
+        'core_port': '1140',
+        'wallet_host': 'localhost',
+        'wallet_port': '1050',
+        'miner_host': 'localhost',
+        'miner_port': '1120'
+    }
+
+    config['ripda_transaction'] = {
+        'pool_block_limit': '25',
+    }
+
+    config['ripda_block'] = {
+        'core_difficulty': '4',
+    }
+"""
+
+
+core_difficulty_before = getc('ripda_block', 'core_difficulty')
+
+print(core_difficulty_before)
+
+setc('ripda_block', 'core_difficulty', '6')
+
+core_difficulty_after = getc('ripda_block', 'core_difficulty')
+
+print(core_difficulty_after)
+
+``` 
+
+##### Notas
+> Se o Ripda não criar diretórios de forma altamântica, você precisará criá-los manualmente. Os diretórios são usados para fazer backup de dados. 
 

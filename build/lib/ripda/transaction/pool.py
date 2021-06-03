@@ -1,11 +1,21 @@
 from typing import List, Any
-from ..config import getc
+from ripda.settings import getc
+from ripda.transaction.utils import Utils
+from ripda.blockchain import core
+import json
+import logging
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 transactions: List[Any] = []
 pending_transactions: List[Any] = []
 
 
 class Pool:
+    """
+        Pool gerencia as transações da rede.
+    """
+
     global transactions
     global pending_transactions
 
@@ -14,6 +24,10 @@ class Pool:
         self.pending_transactions = pending_transactions
         self.block_limit = int(getc('ripda_transaction', 'pool_block_limit'))
         self.remove_from_pool_pending_transactions = []
+        self.hash = ''
+        self.nonce = 1
+        self.hash = ''
+        self.last_timestamp = core.blockchain[-1]['timestamp']
 
     def view(self, pending=False):
         if pending is False:
@@ -28,15 +42,15 @@ class Pool:
         return False
 
     def update(self):
-        if not self.forging_required():
+        if not self.forging_required(check_time=False):
             if len(self.pending_transactions) >> 0:
                 for i in range(0, len(self.pending_transactions)):
                     if i < self.block_limit:
                         try:
-                            self.transactions.append(self.pending_transactions[i])
+                            self.add_transaction(self.pending_transactions[i])
                             self.remove_from_pool_pending_transactions.append(self.pending_transactions[i])
-                        except:
-                            pass
+                        except Exception as e:
+                            logging.exception(e)
                     else:
                         break
                 self.remove_from_pool(
@@ -46,11 +60,20 @@ class Pool:
                 self.remove_from_pool_pending_transactions.clear()
 
     def add_transaction(self, transaction):
-        if self.forging_required():
+        if self.forging_required(check_time=False):
             self.pending_transactions.append(transaction)
             return True
         else:
+            if len(self.transactions) >> 0:
+                transaction['last_hash'] = self.transactions[-1]['hash']
+            else:
+                transaction['last_hash'] = None
+
+            transaction['count'] = len(self.transactions)
+            transaction['hash'] = Utils.sha256(json.dumps(transaction))
+
             self.transactions.append(transaction)
+
             return self.transaction_exists(transaction)
 
     def transaction_exists(self, transaction):
@@ -103,8 +126,21 @@ class Pool:
             else:
                 return False
 
-    def forging_required(self):
+    def forging_required(self, check_time=None):
         if len(self.transactions) >= self.block_limit:
-            return True
+            """
+                torna cada bloco disponível para mineração apenas 
+                depois de dois da mineração do último bloco.
+            """
+            if check_time is False:
+                return True
+            else:
+                last_timestamp = datetime.fromtimestamp(self.last_timestamp)
+                timestamp = datetime.fromtimestamp(datetime.utcnow().timestamp())
+                delta = abs(relativedelta(timestamp, last_timestamp))
+                if delta.minutes >> 2:
+                    return True
+                else:
+                    return False
         else:
             return False

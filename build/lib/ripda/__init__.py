@@ -1,6 +1,6 @@
 import os
-from .config import default
-from .config import getc
+from .settings import default
+from .settings import getc
 
 if not os.path.isfile('config.ini'):
     default()

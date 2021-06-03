@@ -4,6 +4,7 @@ requires = [
     'ecdsa==0.17.0',
     'websockets==9.1',
     'setuptools>=40.8.0',
+    'python-dateutil==2.8.1',
     'wheel'
 ]
 build-backend = 'setuptools.build_meta'

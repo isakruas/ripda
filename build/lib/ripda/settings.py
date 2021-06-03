@@ -1,4 +1,5 @@
 import configparser
+import logging
 from pathlib import Path
 import sys
 
@@ -73,8 +74,8 @@ if __name__ == '__main__':
             option = int(input(
                 '[0] - Usar configuração padrão\n[1] - Personalizar arquivo de configuração\n[2] - Cancelar '
                 'configuração\n'))
-        except:
-            pass
+        except Exception as e:
+            logging.exception(e)
         if option is not None:
             if option == 0:
                 default()

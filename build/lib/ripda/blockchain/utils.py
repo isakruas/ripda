@@ -1,11 +1,15 @@
 import hashlib
+from ripda.settings import getc
 
 
 class Utils:
+    """
+        Conjunto de funções úteis que são usadas no arquivo core.py
+    """
 
     @staticmethod
     def is_hash_valid(_hash):
-        return _hash.startswith('0'*4)
+        return _hash.startswith('0' * int(getc('ripda_block', 'core_difficulty')))
 
     @staticmethod
     def sha256(string):

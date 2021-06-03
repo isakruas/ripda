@@ -1,12 +1,14 @@
 import codecs
 import hashlib
+import logging
+
 from base58 import b58encode
 import ecdsa
 from ecdsa.util import PRNG
 import json
-from ..transaction.utils import Utils
-from ..transaction.core import Transaction
-from ..block.core import Block
+from ripda.transaction.utils import Utils
+from ripda.transaction.core import Transaction
+from ripda.block.core import Block
 
 
 class Wallet:
@@ -22,8 +24,8 @@ class Wallet:
                     self.private_key = ecdsa.SigningKey.from_string(private_key, curve=ecdsa.NIST521p)
                     self.get_public_key()
                     self.get_wallet()
-                except:
-                    pass
+                except Exception as e:
+                    logging.exception(e)
 
     def create_transaction(self, receiver, amount):
         if self.private_key is not None:
@@ -114,8 +116,10 @@ class Wallet:
                 try:
                     public_key.verify(signature, transaction)
                     return True
-                except:
+                except Exception as e:
+                    logging.exception(e)
                     return False
-            except:
+            except Exception as e:
+                logging.exception(e)
                 return False
         return False
