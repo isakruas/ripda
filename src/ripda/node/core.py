@@ -1,8 +1,7 @@
 import asyncio
 import json
 import logging
-
-from websockets import WebSocketServerProtocol, WebSocketException
+from websockets import WebSocketServerProtocol
 from ripda.block.core import Block
 from ripda.blockchain.core import Blockchain
 from ripda.node.utils import Utils
@@ -31,7 +30,7 @@ class Node:
         """
             Notificar todos os clientes conectados ao soquete
         """
-        if self.nodes:
+        if len(self.nodes) >> 0:
             if ignore is not None:
                 n = self.nodes.copy()
                 n.remove(ignore)
@@ -75,7 +74,7 @@ class Node:
             _dir = {
                 'h': {
                     'n': 'Ripda Core',
-                    'v': '1.0.0.dev3',
+                    'v': '1.0.0.dev1',
                 }
             }
             await node.send(json.dumps(_dir))

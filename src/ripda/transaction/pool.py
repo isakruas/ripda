@@ -27,7 +27,10 @@ class Pool:
         self.hash = ''
         self.nonce = 1
         self.hash = ''
-        self.last_timestamp = core.blockchain[-1]['timestamp']
+        if len(core.blockchain) >> 0:
+            self.last_timestamp = core.blockchain[-1]['timestamp']
+        else:
+            self.last_timestamp = datetime.utcnow().timestamp()
 
     def view(self, pending=False):
         if pending is False:

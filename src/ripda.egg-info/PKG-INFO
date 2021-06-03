@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ripda
-Version: 1.0.0.dev3
+Version: 1.0.0a1
 Summary: Integração do núcleo Ripda
 Home-page: https://github.com/isakruas/ripda
 Author: Isak Paulo de Andrade Ruas
@@ -17,7 +17,7 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3.6
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
-License-File: LICENSE
+License-File: LICENSE.txt
 
 ### *Integração do núcleo Ripda*
 > *Ripda* é uma criptomoeda experimental construída com a linguagem de programação python, fácil de instalar e configurar, que permite a qualquer usuário construir seus próprios aplicativos através do núcleo do Ripda.

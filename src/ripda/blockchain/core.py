@@ -7,7 +7,6 @@ from ripda.blockchain.utils import Utils
 from ripda.settings import getc
 from ripda.transaction.pool import Pool
 
-
 blockchain: List[Any] = []
 wallet = {}
 
@@ -45,6 +44,10 @@ class Blockchain:
         self.wallet = wallet
         self.difficulty = '0' * int(getc('ripda_block', 'core_difficulty'))
         self.block = []
+        """
+            A taxa é cobrada, em porcentagem, de cada transação realizada na rede é 0.04%
+        """
+        self.fee = 0.04
         self.path = str(getc('ripda', 'path_blocks'))
         if len(self.blockchain) == 0:
             blocks = os.listdir(self.path)
@@ -188,17 +191,49 @@ class Blockchain:
                 """
                 self.blockchain.append(self.block)
                 """
-                    atualizar valores de carteira salvos localmente
+                    Atualizar valores de carteira salvos localmente
                 """
                 if len(self.block['transactions']) >> 0:
                     for transaction in self.block['transactions']:
-                        self.wallet[transaction['sender']]['amount'] -= transaction['amount']
-                        self.wallet[transaction['receiver']]['amount'] += transaction['amount']
-                if self.block['forging'] in self.wallet:
-                    self.wallet[self.block['forging']]['amount'] += 0.04
-                else:
-                    self.wallet[self.block['forging']] = {}
-                    self.wallet[self.block['forging']]['amount'] = 0.04
+                        self.wallet[transaction['sender']]['amount'] -= float(transaction['amount'])
+                        self.wallet[transaction['sender']]['amount'] = round(self.wallet[transaction[
+                            'sender']]['amount'], 8)
+
+                        if transaction['receiver'] in self.wallet:
+                            self.wallet[transaction['receiver']]['amount'] += float(transaction['amount'] * (1 - self.fee))
+                            self.wallet[transaction['receiver']]['amount'] = round(self.wallet[transaction[
+                                'receiver']]['amount'], 8)
+                        else:
+                            self.wallet[transaction['receiver']] = {}
+                            self.wallet[transaction['receiver']]['amount'] = float(transaction['amount'] * (1 - self.fee))
+                            self.wallet[transaction['receiver']]['amount'] = round(self.wallet[transaction[
+                                'receiver']]['amount'], 8)
+
+                        if self.block['forging'] in self.wallet:
+                            self.wallet[self.block['forging']]['amount'] += float(transaction['amount'] * self.fee)
+                            self.wallet[self.block['forging']]['amount'] = round(self.wallet[self.block[
+                                'forging']]['amount'], 8)
+                        else:
+                            self.wallet[self.block['forging']] = {}
+                            self.wallet[self.block['forging']]['amount'] = float(transaction['amount'] * self.fee)
+                            self.wallet[self.block['forging']]['amount'] = round(self.wallet[self.block[
+                                'forging']]['amount'], 8)
+
+                """
+                    Limita a quantidade à quantidade máxima de Ripdas que podem ser geradas
+                    (99999999+1)*0.04 representa o limite de Ripdas que pode ser geradas
+                """
+                if self.block['count'] <= 99999999:
+                    if self.block['forging'] in self.wallet:
+                        self.wallet[self.block['forging']]['amount'] += float(0.04)
+                        self.wallet[self.block['forging']]['amount'] = round(self.wallet[self.block[
+                            'forging']]['amount'], 8)
+                    else:
+                        self.wallet[self.block['forging']] = {}
+                        self.wallet[self.block['forging']]['amount'] = float(0.04)
+                        self.wallet[self.block['forging']]['amount'] = round(self.wallet[self.block[
+                            'forging']]['amount'], 8)
+
                 _path_wallet = self.path + 'wallets.r'
                 g = open(_path_wallet, 'w')
                 g.write(json.dumps(self.wallet, indent=4))

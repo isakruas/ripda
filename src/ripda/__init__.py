@@ -1,13 +1,24 @@
 import os
+from pathlib import Path
 from .settings import default
-from .settings import getc
+import logging
 
-if not os.path.isfile('config.ini'):
-    default()
-    if not os.path.isdir(str(getc('ripda', 'path'))):
-        os.mkdir(str(getc('ripda', 'path')))
-        os.mkdir(str(getc('ripda', 'path_blocks')))
-    pass
+try:
+    if os.path.isdir(str(Path.home()) + '/ripda/'):
+
+        if not os.path.isdir(str(Path.home()) + '/ripda/blocks/'):
+            os.mkdir(str(Path.home()) + '/ripda/blocks/')
+            pass
+
+        if not os.path.isfile(str(Path.home()) + '/ripda/config.ini'):
+            default()
+            pass
+    else:
+        os.mkdir(str(Path.home()) + '/ripda/')
+        os.mkdir(str(Path.home()) + '/ripda/blocks/')
+        default()
+except Exception as e:
+    logging.exception(e)
 
 __all__ = [
     'block',

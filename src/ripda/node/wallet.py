@@ -70,7 +70,7 @@ class NodeWallet:
             _dir = {
                 'h': {
                     'n': 'Ripda Wallet',
-                    'v': '1.0.0.dev3',
+                    'v': '1.0.0.dev1',
                 }
             }
             await node.send(json.dumps(_dir))
