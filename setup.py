@@ -42,7 +42,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
 
     name='ripda',
-    version='1.0.0.a1',
+    version='0.0.1.dev1',
     description='Integração do núcleo Ripda',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -51,7 +51,7 @@ setup(
     license='MIT',
     author_email='isakruas@gmail.com',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
