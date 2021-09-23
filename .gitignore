@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.so
+
+*.log
+
+venv/
+
+.idea/
+
+example/
