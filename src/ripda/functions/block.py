@@ -1,6 +1,6 @@
 from datetime import datetime
 from ripda.functions.miner import sha256
-
+from ripda import settings
 
 def create_genesis(forging: str) -> dict:
     """
@@ -20,12 +20,12 @@ def create_genesis(forging: str) -> dict:
         'forging': forging
     }
     data = tuple()
-    nonce_start = 0.0
-    nonce_stop = 100.0
-    nonce_step = 0.001
+    nonce_start = settings.MINER_NONCE_START
+    nonce_stop = settings.MINER_NONCE_STOP
+    nonce_step = settings.MINER_NONCE_STEP
     while data == tuple():
         data = sha256(block, nonce_start=nonce_start,
-                      nonce_stop=nonce_stop, nonce_step=nonce_step, difficulty=4)
+                      nonce_stop=nonce_stop, nonce_step=nonce_step, difficulty=settings.HASH_DIFFICULTY)
         nonce_start = nonce_stop + nonce_step
         nonce_stop = 2 * nonce_stop
     return data[0]

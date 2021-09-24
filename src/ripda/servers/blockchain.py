@@ -24,6 +24,7 @@ class Blockchain(FACServer):
                         rdef = receiver['def']
                         if rdef in self.methods:
                             receiver['return'] = eval(f'{rdef}(**{kwds})')
+                            await self.notify(json.dumps(receiver))
                             await socket.send(json.dumps(receiver))
                     else:
                         pass

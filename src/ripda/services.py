@@ -12,9 +12,9 @@ async def wallet():
     await server.server.serve_forever()
 
 
-async def blockchain():
+async def blockchain(host: str = settings.BLOCKCHAIN_HOST, port: int = settings.BLOCKCHAIN_PORT):
     """
     Nó no qual o blockchain será servido
     """
-    server = await websockets.serve(Blockchain().handler, settings.BLOCKCHAIN_HOST, settings.BLOCKCHAIN_PORT)
+    server = await websockets.serve(Blockchain().handler, host, port)
     await server.server.serve_forever()

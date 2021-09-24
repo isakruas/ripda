@@ -51,13 +51,9 @@ class Wallet(metaclass=Singleton):
             self.__private_key = key.to_string().hex()
             self.__public_key = key.verifying_key.to_string('compressed').hex()
             self.__wallet = wallet_derive(self.__public_key)
-            return {
-                'private_key': self.__private_key,
-                'public_key': self.__public_key,
-                'wallet': self.__wallet
-            }
+            return self.repr()
         except:
-            return dict()
+            return self.close()
 
     def create(self, **kwds) -> bytes:
         """

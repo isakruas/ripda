@@ -5,7 +5,7 @@ import hashlib
 import json
 import multiprocessing
 from typing import Generator
-
+from ripda import settings
 
 def frange(start: float = 0.0, stop: float = 10.0, step: float = 0.1) -> Generator[float, None, None]:
     """
@@ -18,7 +18,7 @@ def frange(start: float = 0.0, stop: float = 10.0, step: float = 0.1) -> Generat
         start = start + step
 
 
-def _sha256(data: dict, sample: tuple, difficulty: int) -> str:
+def _sha256(data: dict, sample: tuple, difficulty: int = settings.HASH_DIFFICULTY) -> str:
     """
     Ele pega os dados e uma amostra de todos os nonces
     possíveis e tenta encontrar o hash válido com a amostra recebida.
@@ -33,7 +33,7 @@ def _sha256(data: dict, sample: tuple, difficulty: int) -> str:
     return hash
 
 
-def sha256(data: dict = {}, nonce_start: float = 0.0, nonce_stop: float = 1000.0, nonce_step: float = 0.001, difficulty: int = 4) -> tuple:
+def sha256(data: dict = {}, nonce_start: float = settings.MINER_NONCE_START, nonce_stop: float = settings.MINER_NONCE_STOP, nonce_step: float = settings.MINER_NONCE_STEP, difficulty: int = settings.HASH_DIFFICULTY) -> tuple:
     """
     Ele pega os dados, cria uma representação dos possíveis nonces, separa os possíveis nonces em blocos, 
     de preferência igualitários, e equilibra o processamento de dados em todos os núcleos de processador disponíveis.
