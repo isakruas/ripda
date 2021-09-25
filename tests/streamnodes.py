@@ -6,7 +6,7 @@ import json
 import multiprocessing
 from ripda import settings
 
-
+print('@'*1000)
 class Handler(FACClient):
     """
     Lida com eventos de entrada recebidos pela conexão entre o nó e os nós
@@ -16,6 +16,7 @@ class Handler(FACClient):
         Sempre que receber uma mensagem, envie outra
         """
         print(f'RECEBENDO: {recv}')
+        """
         msg = {
             'def': 'echo',
             'kwds': {
@@ -28,6 +29,7 @@ class Handler(FACClient):
             print('MENSAGEM ENVIADA COM SUCESSO')
         else:
             print('ERRO AO ENVIAR MENSAGEM')
+        """
 
 
 class STREAMNodes:

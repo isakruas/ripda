@@ -6,7 +6,7 @@ WALLET_PORT: int = 1050
 
 # Nó no qual o blockchain será servido
 BLOCKCHAIN_HOST: str = 'localhost'
-BLOCKCHAIN_PORT: int = 7865
+BLOCKCHAIN_PORT: int = 8725
 
 # Nós aos quais o host se conectará
 BLOCKCHAIN_NODES: list = [('localhost', 8765), ('localhost', 8745)]
@@ -22,6 +22,16 @@ BASE_DIR = pathlib.Path(__file__).parent.resolve()
 
 # Crie os diretórios locais a serem usados pelo sistema
 [x.mkdir(parents=True, exist_ok=True) for x in (BASE_DIR / 'storage/cache', BASE_DIR / 'storage/database/blocks', BASE_DIR / 'storage/database/wallets')]
+
+# CACHE_DIR
+CACHE_DIR = BASE_DIR / 'storage/cache'
+
+# BLOCKS_DIR
+BLOCKS_DIR = BASE_DIR / 'storage/database/blocks'
+
+# WALLETS_DIR
+WALLETS_DIR = BASE_DIR / 'storage/database/wallets'
+
 """
 --------------------------------------------------
 ÁRVORE DE DIRETÓRIOS CRIADOS:

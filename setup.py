@@ -61,7 +61,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.6',
-    install_requires=['base58==2.1.0', 'ecdsa==0.17.0', 'websockets==9.1', 'python-dateutil==2.8.1'],
+    install_requires=['base58==2.1.0', 'ecdsa==0.17.0', 'websockets==9.1', 'python-dateutil==2.8.1','aiofiles==0.7.0'],
     project_urls={
         'Bug Reports': 'https://github.com/isakruas/ripda/issues',
         'Source': 'https://github.com/isakruas/ripda/',
