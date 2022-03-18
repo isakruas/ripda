@@ -1,15 +1,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
 *.so
-
 *.log
-
 venv/
-
 .idea/
-
-example/
-
-storage/
+ripda.egg-info/
