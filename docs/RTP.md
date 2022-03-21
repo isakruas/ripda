@@ -5,7 +5,7 @@
 #### Formas de operação
 > Na primeira, client-node, a comunicação ocorre de forma ativa, ou seja, o cliente envia uma requisição para um node, este por sua vez válida e analisa o conjunto de instruções recebidas, e então, retorna ao client uma resposta contendo o resultado das operações dos conjuntos de instruções recebidos. Podemos dizer também que a forma de funcionamento do client-node é semelhante a forma de funcionamento de um client-server. A cada requisição enviada, espera-se de imediato o resultado com os dados solicitados na requisição.
 
-> Na segunda, node-node, a comunicação ocorre de forma passiva, ou seja, ao um node A enviar uma requisição ao node B, A não espera, de imediato, receber de B a resposta com os resultados das informações solicitadas, apenas a confirmação de que B recebeu a requisição. Isso faz com que B tenha mais tempo para processar a requisição feita por A, e até mesmo, caso necessário, repassar esta requisição para outro node, exemplo Z, para que ele responda a A ao invés de B, caso a requisição não tenha expirado. Assim, o node Z, que inicialmente era desconhecido para A, pode responder a ele sobre uma requisição que inicialmente A fez a B.
+> Na segunda, node-node, a comunicação ocorre de forma passiva, ou seja, ao um node **A** enviar uma requisição ao node **B**, **A** não espera, de imediato, receber de **B** a resposta com os resultados das informações solicitadas, apenas a confirmação de que **B** recebeu a requisição. Isso faz com que **B** tenha mais tempo para processar a requisição feita por **A**, e até mesmo, caso necessário, repassar esta requisição para outro node, exemplo **Z**, para que ele responda a **A** ao invés de **B**, caso a requisição não tenha expirado. Assim, o node **Z**, que inicialmente era desconhecido para **A**, pode responder a ele sobre uma requisição que inicialmente **A** fez a **B**.
 #### Características 
 > No RTP toda comunicação é feita de maneira autenticada, ou seja, o emissor de uma requisição ou resposta, deve, obrigatoriamente, assinar digitalmente a requisição ou resposta e incorporar esta assinatura digital no corpo da requisição para que ela seja aceita pela outra parte. Isto torna possível identificar os indivíduos de uma rede RTP, e caso necessário, restringir o acesso deste indivíduo a rede caso o mesmo apresente comportamento prejudicial à saúde da mesma.
 
@@ -43,7 +43,7 @@
 > TIMESTAMP
 > DATA
 > ```
-> * Na resposta de uma requisição, é acrescentado um hash da requisição no qual está se respondendo, e a assinatura digital da resposta é gerada sobre ```INT(SHA256('HOST:PORT'+'SHA256(REQUEST)'+'DATA'+'TIMESTAMP'))```
+> Na resposta de uma requisição, é acrescentado um hash da requisição no qual está se respondendo, e a assinatura digital da resposta é gerada sobre ```INT(SHA256('HOST:PORT'+'SHA256(REQUEST)'+'DATA'+'TIMESTAMP'))```
 
 ### Estudo de caso
 
