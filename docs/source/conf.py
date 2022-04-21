@@ -24,6 +24,7 @@ author = 'Isak Paulo de Andrade Ruas'
 # The full version, including alpha/beta/rc tags
 release = '1.0.0a2'
 
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
