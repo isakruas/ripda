@@ -4,6 +4,9 @@ from ripda.conf import global_settings
 
 
 class Settings:
+    """
+    importa para execução as configurações definidas no aplicativo.
+    """
 
     SETTINGS_MODULE: str = ''
 

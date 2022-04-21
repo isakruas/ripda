@@ -1,3 +1,6 @@
-ripda~=0.0.1.dev1
-websockets~=9.1
-setuptools~=56.0.0
+ecutils
+fastapi
+uvicorn[standard]
+sqlmodel
+tqdm
+asyncpg

@@ -1,3 +1,14 @@
+from ripda.core.management.commands import (
+    migrate,
+    populate,
+    runserver,
+    miner
+)
+
+
 __all__ = [
-    'runnode'
+    'migrate',
+    'populate',
+    'runserver',
+    'miner'
 ]
