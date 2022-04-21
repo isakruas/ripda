@@ -8,3 +8,4 @@ venv/
 ripda.egg-info/
 build/
 .pypirc
+dist/
