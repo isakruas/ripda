@@ -1,4 +1,4 @@
-ecutils
+ecutils==0.0.1.dev1
 fastapi
 uvicorn[standard]
 sqlmodel
