@@ -6,6 +6,5 @@ __pycache__/
 venv/
 .idea/
 ripda.egg-info/
-build/
 .pypirc
 dist/
