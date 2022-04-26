@@ -45,7 +45,7 @@ async def _main(**kwargs) -> None:
 
     print(datetime.now().strftime("%B %d, %Y - %H:%M:%S"))
     print(f"Ripda version {__version__}, using settings '{settings.SETTINGS_MODULE}'")
-    print(f'Migrate at {url}')
+    print(f'Migrate at {url}')  # lgtm [py/clear-text-logging-sensitive-data]
 
     return None
 

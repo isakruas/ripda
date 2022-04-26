@@ -126,7 +126,7 @@ async def transactions(offset: int = 0, limit: int = 100, merged: bool = False):
         )
         if merged is False:
             query = query.where(
-                Transaction.blocks == None
+                Transaction.blocks == None # lgtm [py/test-equals-none]
             )
         query = query.offset(offset).limit(limit).order_by(
             Transaction.timestamp.asc()
